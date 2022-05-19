@@ -1,4 +1,3 @@
-from ast import While
 from http import client
 import socket
 
@@ -19,8 +18,8 @@ def start_my_server():
 
         # получение данных о подключившемся, если никто не подключённ программа дальше не идёт
         client_socket, address = server.accept()
-        print("client_socket=", client_socket)
-        print("address=", address)
+        #print("client_socket=", client_socket)
+        #print("address=", address)
         # получение данных от клиента(с заданым резмером), её нужно декодировать
         data = client_socket.recv(1024).decode("utf-8")
         # print(data)
@@ -39,16 +38,23 @@ def load_page(request_data):
     HDRS_404 = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n"
     # Получаем данные , которые запросил пользователь
     path = request_data.split(" ")[1]
+    #print(path)
     response = " "
-
-    # Проверка ответа сервера
-    try:
-        # открываем папку с данными и конкретную страницу, при помаще флага "rb" сразу в байтовом виде
-        with open('pages'+path, "rb") as file:
+    if path == "/":
+        with open('pages'+"/home.html", "rb") as file:
             response = file.read()
-        return HDRS.encode("utf-8")+response
-    except FileNotFoundError:
-        return(HDRS_404 + "Ой, такой страницы не существует!").encode("utf-8")
+            return HDRS.encode("utf-8")+response
+    else:
+        # Проверка ответа сервера
+        try:
+            # открываем папку с данными и конкретную страницу, при помаще флага "rb" сразу в байтовом виде
+            with open('pages'+path, "rb") as file:
+                response = file.read()
+            return HDRS.encode("utf-8")+response
+        except FileNotFoundError:
+            with open('pages'+"/404.html", "rb") as file:
+                response = file.read()
+            return HDRS.encode("utf-8")+response
 
 
 if __name__ == "__main__":
